@@ -1,0 +1,35 @@
+{
+    "name": "marshmallow/nova-tool-data-importer",
+    "description": "A fully-fledged Excel & CSV import tool for Laravel Nova. The importer will use your own validation rules on every row. It can run in browser and in queued jobs. When running as a job, events will fire to let you know what is happening.",
+    "keywords": [
+        "laravel",
+        "nova",
+        "marshmallow",
+        "excel import",
+        "laravel nova importer"
+    ],
+    "homepage": "https://github.com/Marshmallow-Development/",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.1.0",
+        "maatwebsite/excel": "^3.1",
+        "pusher/pusher-php-server": "~4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Marshmallow\\NovaDataImporter\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Marshmallow\\NovaDataImporter\\ToolServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
