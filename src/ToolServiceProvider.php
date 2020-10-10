@@ -2,10 +2,10 @@
 
 namespace Marshmallow\NovaDataImporter;
 
-use Laravel\Nova\Nova;
-use Laravel\Nova\Events\ServingNova;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Nova\Events\ServingNova;
+use Laravel\Nova\Nova;
 use Marshmallow\NovaDataImporter\Http\Middleware\Authorize;
 
 class ToolServiceProvider extends ServiceProvider
@@ -32,7 +32,6 @@ class ToolServiceProvider extends ServiceProvider
         });
 
         Nova::serving(function (ServingNova $event) {
-
         });
     }
 

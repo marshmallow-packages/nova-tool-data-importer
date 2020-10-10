@@ -2,31 +2,28 @@
 
 namespace Marshmallow\NovaDataImporter\Models;
 
-use App\Nova\Resource;
-use Laravel\Nova\Nova;
-use Laravel\Nova\Fields\Field;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Nova\Actions\ActionResource;
-use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Fields\Field;
+use Laravel\Nova\Nova;
 
 class MarshmallowNovaImportJob extends Model
 {
     protected $guarded = [];
 
     protected $casts = [
-    	'sample' => 'array',
-    	'resources' => 'array',
-    	'fields' => 'array',
-    	'total_rows' => 'array',
-    	'headings' => 'array',
+        'sample' => 'array',
+        'resources' => 'array',
+        'fields' => 'array',
+        'total_rows' => 'array',
+        'headings' => 'array',
     ];
 
-    public function progressMessage ()
+    public function progressMessage()
     {
         return $this->progress . ' of ' . $this->total_rows . ' have been processed';
     }
 
-    public function progress ()
+    public function progress()
     {
         if ($this->total_rows == 0) {
             return 0;
@@ -38,7 +35,7 @@ class MarshmallowNovaImportJob extends Model
         return ($this->progress / $this->total_rows) * 100;
     }
 
-    public function previewData ()
+    public function previewData()
     {
         return [
             'sample' => $this->sample,

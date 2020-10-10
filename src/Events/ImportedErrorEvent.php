@@ -3,13 +3,11 @@
 namespace Marshmallow\NovaDataImporter\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Marshmallow\NovaDataImporter\Models\MarshmallowNovaImportJob;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class ImportedErrorEvent implements ShouldBroadcast
 {
@@ -35,16 +33,17 @@ class ImportedErrorEvent implements ShouldBroadcast
     public function broadcastOn()
     {
         return ['myChannel'];
+
         return new Channel('myChannel');
         // return new PrivateChannel('myEvent');
     }
 
-    public function broadcastAs ()
+    public function broadcastAs()
     {
         return 'server.error';
     }
 
-    public function broadcastWith ()
+    public function broadcastWith()
     {
         return $this->response;
     }

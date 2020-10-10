@@ -3,29 +3,27 @@
 namespace Marshmallow\NovaDataImporter;
 
 use App\Nova\Resource;
-use Laravel\Nova\Nova;
 use Laravel\Nova\Fields\Field;
-use Laravel\Nova\Http\Requests\NovaRequest;
-use Marshmallow\NovaDataImporter\ImportRun;
-use Marshmallow\NovaDataImporter\ImportPreview;
-use Marshmallow\NovaDataImporter\Jobs\RunImport;
+use Laravel\Nova\Nova;
 use Marshmallow\NovaDataImporter\Jobs\PrepareDataImportPreview;
+use Marshmallow\NovaDataImporter\Jobs\RunImport;
 use Marshmallow\NovaDataImporter\Models\MarshmallowNovaImportJob;
 
 class Import
 {
-	protected $request;
-	protected $file;
+    protected $request;
 
-	public function __construct ($request, $file)
-	{
-		$this->request = $request;
-		$this->file = $file;
-	}
+    protected $file;
 
-	public function import ()
-	{
-		$resource_name = $this->request->input('resource');
+    public function __construct($request, $file)
+    {
+        $this->request = $request;
+        $this->file = $file;
+    }
+
+    public function import()
+    {
+        $resource_name = $this->request->input('resource');
         $this->request->route()->setParameter('resource', $resource_name);
         $resource = Nova::resourceInstanceForKey($resource_name);
 
@@ -42,52 +40,54 @@ class Import
 
 
         $import = (new ImportRun)
-        				->setImporter($importer)
-        				->setFile($this->file);
+                        ->setImporter($importer)
+                        ->setFile($this->file);
 
         if (config('nova-data-importer.use_jobs')) {
-        	RunImport::dispatch($import);
+            RunImport::dispatch($import);
         } else {
-        	return $import->run();
+            return $import->run();
         }
+    }
 
-	}
-
-	public function preview ()
-	{
-		$request = $this->request;
-		/**
-		 * Return prepared data if this is already available
-		 * in the database.
-		 */
-		if ($preview = MarshmallowNovaImportJob::where('file', $this->file)->get()->first()) {
+    public function preview()
+    {
+        $request = $this->request;
+        /**
+         * Return prepared data if this is already available
+         * in the database.
+         */
+        if ($preview = MarshmallowNovaImportJob::where('file', $this->file)->get()->first()) {
             return $preview->previewData($request);
         }
 
-		$class = config('nova-data-importer.importer');
+        $class = config('nova-data-importer.importer');
         $importer = new $class;
 
         $resources = collect(Nova::$resources);
         
         $resources = $resources->filter(function ($resource) {
             $static_vars = (new \ReflectionClass((string) $resource))->getStaticProperties();
-            if(!isset($static_vars['canImportResource'])) {
+            if (! isset($static_vars['canImportResource'])) {
                 return true;
             }
+
             return isset($static_vars['canImportResource']) && $static_vars['canImportResource'];
         });
 
         $fields = $resources->map(function ($resource) {
             $model = $resource::$model;
+
             return new $resource(new $model);
         })->mapWithKeys(function ($resource) use ($request) {
             $fields = collect($resource->creationFields($request))
                 ->map(function (Field $field) {
                     return [
                         'name' => $field->name,
-                        'attribute' => $field->attribute
+                        'attribute' => $field->attribute,
                     ];
                 });
+
             return [$resource->uriKey() => $fields];
         });
 
@@ -96,19 +96,19 @@ class Import
         });
 
         $preview = (new ImportPreview)
-        				->setImporter($importer)
-        				->setFile($this->file)
-        				->setResources($resources)
-        				->setFields($fields);
+                        ->setImporter($importer)
+                        ->setFile($this->file)
+                        ->setResources($resources)
+                        ->setFields($fields);
 
         if (config('nova-data-importer.use_jobs')) {
-        	PrepareDataImportPreview::dispatch($preview);
+            PrepareDataImportPreview::dispatch($preview);
         } else {
-        	return $preview->generate()->previewData();
+            return $preview->generate()->previewData();
         }
-	}
+    }
 
-	protected function extractValidationRules($request, Resource $resource)
+    protected function extractValidationRules($request, Resource $resource)
     {
         return collect($resource::rulesForCreation($request))->mapWithKeys(function ($rule, $key) {
             foreach ($rule as $i => $r) {
@@ -120,6 +120,7 @@ class Import
                 if (is_a($r, Relatable::class)) {
                     $rule[$i] = function () use ($r) {
                         $r->query = $r->query->newQuery();
+
                         return $r;
                     };
                 }

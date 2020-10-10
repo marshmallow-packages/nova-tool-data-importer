@@ -4,9 +4,8 @@ namespace Marshmallow\NovaDataImporter\Http\Controllers;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
-use Maatwebsite\Excel\Concerns\Importable;
-use Marshmallow\NovaDataImporter\Importer;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Maatwebsite\Excel\Concerns\Importable;
 use Marshmallow\NovaDataImporter\Models\MarshmallowNovaImportJob;
 
 class UploadController
@@ -31,7 +30,7 @@ class UploadController
         return response()->json(['result' => 'success', 'file' => $hash]);
     }
 
-    public function delete ($file)
+    public function delete($file)
     {
         /**
          * Remove the tmp uploaded file

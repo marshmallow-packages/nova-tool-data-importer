@@ -3,12 +3,11 @@
 namespace Marshmallow\NovaDataImporter\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 use Marshmallow\NovaDataImporter\Models\MarshmallowNovaImportJob;
 
 class DataImportPreviewDoneEvent implements ShouldBroadcast
@@ -35,16 +34,17 @@ class DataImportPreviewDoneEvent implements ShouldBroadcast
     public function broadcastOn()
     {
         return ['myChannel'];
+
         return new Channel('myChannel');
         // return new PrivateChannel('myEvent');
     }
 
-    public function broadcastAs ()
+    public function broadcastAs()
     {
         return 'server.created';
     }
 
-    public function broadcastWith ()
+    public function broadcastWith()
     {
         return (array) $this->job->previewData();
     }

@@ -2,16 +2,11 @@
 
 namespace Marshmallow\NovaDataImporter\Jobs;
 
-use App\Nova\Resource;
-use Laravel\Nova\Nova;
 use Illuminate\Bus\Queueable;
-use Laravel\Nova\Fields\Field;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Laravel\Nova\Http\Requests\NovaRequest;
-use Marshmallow\NovaDataImporter\Models\MarshmallowNovaImportJob;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Marshmallow\NovaDataImporter\Events\DataImportPreviewDoneEvent;
 
 class PrepareDataImportPreview implements ShouldQueue

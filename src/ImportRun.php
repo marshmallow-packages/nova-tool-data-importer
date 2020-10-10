@@ -2,76 +2,81 @@
 
 namespace Marshmallow\NovaDataImporter;
 
-use Marshmallow\NovaDataImporter\Traits\ImportTrait;
 use Marshmallow\NovaDataImporter\Events\ImportedErrorEvent;
 use Marshmallow\NovaDataImporter\Events\ImportedSuccessfullyEvent;
+use Marshmallow\NovaDataImporter\Traits\ImportTrait;
 
 class ImportRun
 {
-	use ImportTrait;
+    use ImportTrait;
 
-	protected $file;
+    protected $file;
 
-	protected $importer;
+    protected $importer;
 
-	protected $is_csv_file = false;
+    protected $is_csv_file = false;
 
-	protected $running_as_job = false;
+    protected $running_as_job = false;
 
-	public function isCsv ()
-	{
-		$this->is_csv_file = true;
-		return $this;
-	}
+    public function isCsv()
+    {
+        $this->is_csv_file = true;
 
-	public function setFile ($file)
-	{
-		$this->file = $file;
-		return $this;
-	}
+        return $this;
+    }
 
-	public function setImporter ($importer)
-	{
-		$this->importer = $importer;
-		return $this;
-	}
+    public function setFile($file)
+    {
+        $this->file = $file;
 
-	public function setRunningAsJob ()
-	{
-		$this->running_as_job = true;
-		return $this;
-	}
+        return $this;
+    }
 
-	public function run ()
-	{
-		if ($file_type = $this->fileType()) {
-			$this->importer
-					->prepare()
-					->import($this->getFilePath($this->file), null, $file_type);
+    public function setImporter($importer)
+    {
+        $this->importer = $importer;
 
-	        if (!$this->importer->failures()->isEmpty() || ! $this->importer->errors()->isEmpty()) {
-	            $errors = (array) $this->importer->getErrorsArray();
-	            $response = [
-	    			'result' => 'failure', 
-	    			'errors' => $errors, 
-	    			'failures' => $this->importer->failures()
-	    		];
-	    		if ($this->running_as_job) {
-	        		event(new ImportedErrorEvent($response));
-	        	}
-	        	return $response;
+        return $this;
+    }
 
-	        } else {
-	        	$response = [
-	                'result' => 'success'
-	            ];
-	        	if ($this->running_as_job) {
-	        		event(new ImportedSuccessfullyEvent($response));
-	        	}
-	            return $response;
-	        }	
-		}
+    public function setRunningAsJob()
+    {
+        $this->running_as_job = true;
 
-		throw new \Exception("Unknown file type");
-	}
+        return $this;
+    }
+
+    public function run()
+    {
+        if ($file_type = $this->fileType()) {
+            $this->importer
+                    ->prepare()
+                    ->import($this->getFilePath($this->file), null, $file_type);
+
+            if (! $this->importer->failures()->isEmpty() || ! $this->importer->errors()->isEmpty()) {
+                $errors = (array) $this->importer->getErrorsArray();
+                $response = [
+                    'result' => 'failure',
+                    'errors' => $errors,
+                    'failures' => $this->importer->failures(),
+                ];
+                if ($this->running_as_job) {
+                    event(new ImportedErrorEvent($response));
+                }
+
+                return $response;
+            } else {
+                $response = [
+                    'result' => 'success',
+                ];
+                if ($this->running_as_job) {
+                    event(new ImportedSuccessfullyEvent($response));
+                }
+
+                return $response;
+            }
+        }
+
+        throw new \Exception("Unknown file type");
+    }
 }
